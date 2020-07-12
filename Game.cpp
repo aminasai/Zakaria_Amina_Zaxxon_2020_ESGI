@@ -6,8 +6,8 @@
 
 const float Game::PlayerSpeed = 250.f;
 const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
-const int windowHeight = 600;
-const int windowWidth = 840;
+const int windowHeight = 800;
+const int windowWidth = 1200;
 
 Game::Game()
 	: mWindow(sf::VideoMode(windowWidth, windowHeight), "Zaxxon_2020", sf::Style::Close)
@@ -35,6 +35,7 @@ Game::Game()
 	_TextureEnemy.loadFromFile("Media/Textures/enemy.png");
 	_TextureCanon.loadFromFile("Media/Textures/canon_2.png");
 	_TextureCanonWeapon.loadFromFile("Media/Textures/canon_bullet.png");
+	_TextureBlock.loadFromFile("Media/Textures/block.png");
 	_TextureEnemyBoss.loadFromFile("Media/Textures/enemy_boss.png");
 	_TextureWeaponEnemyBoss.loadFromFile("Media/Textures/enemy_boss_weapon.png");
 
@@ -131,6 +132,29 @@ void Game::InitSprites()
 	sem->m_position = _EnemyMaster.getPosition();
 	sem->m_enabled = false;
 	EntityManager::m_Entities.push_back(sem);
+
+
+
+	//
+	// Blocks
+	//
+
+	for (int i = 0; i < BLOCK_COUNT; i++)
+	{
+		_Block[i].setTexture(_TextureBlock);
+		_Block[i].setPosition(140.f, 0.f + 180.f * (i + 1));
+
+		std::shared_ptr<Entity> sb = std::make_shared<Entity>();
+		sb->m_sprite = _Block[i];
+		sb->m_type = EntityType::block;
+		sb->m_size = _TextureBlock.getSize();
+		sb->m_position = _Block[i].getPosition();
+		EntityManager::m_Entities.push_back(sb);
+	}
+
+	mStatisticsText.setFont(mFont);
+	mStatisticsText.setPosition(5.f, 5.f);
+	mStatisticsText.setCharacterSize(10);
 
 	//
 	// Enemies Squad 1
@@ -392,6 +416,11 @@ void Game::updateStatistics(sf::Time elapsedTime)
 		HandleEnemyCanonWeaponFiring();
 		HandleEnemyBossWeaponFiring();
 		HanldeWeaponMoves();
+		HandleCollisionWeaponBlock();
+		HandleCollisionPlayerBlock();
+		HandleCollisionEnemyWeaponBlock();
+		HandleCollisionEnemyMasterWeaponBlock();
+		HandleCollisionBlockEnemy();
 		HandleCollisionWeaponEnemy();
 		HandleCollisionWeaponEnemyMaster();
 		HandleCollisionWeaponEnemyCanon();
@@ -571,7 +600,251 @@ end:
 	return;
 }
 
+void Game::HandleCollisionEnemyMasterWeaponBlock()
+{
+	for (std::shared_ptr<Entity> weapon : EntityManager::m_Entities)
+	{
+		if (weapon->m_enabled == false)
+		{
+			continue;
+		}
 
+		if (weapon->m_type != EntityType::enemyMasterWeapon)
+		{
+			continue;
+		}
+
+		for (std::shared_ptr<Entity> block : EntityManager::m_Entities)
+		{
+			if (block->m_type != EntityType::block)
+			{
+				continue;
+			}
+
+			if (block->m_enabled == false)
+			{
+				continue;
+			}
+
+			sf::FloatRect boundWeapon;
+			boundWeapon = weapon->m_sprite.getGlobalBounds();
+
+			sf::FloatRect boundBlock;
+			boundBlock = block->m_sprite.getGlobalBounds();
+
+			if (boundWeapon.intersects(boundBlock) == true)
+			{
+				weapon->m_enabled = false;
+				_IsEnemyMasterWeaponFired = false;
+				//break;
+				goto end;
+			}
+		}
+	}
+
+end:
+	//nop
+	return;
+}
+
+void Game::HandleCollisionEnemyWeaponBlock()
+{
+	for (std::shared_ptr<Entity> weapon : EntityManager::m_Entities)
+	{
+		if (weapon->m_enabled == false)
+		{
+			continue;
+		}
+
+		if (weapon->m_type != EntityType::enemyWeapon)
+		{
+			continue;
+		}
+
+		for (std::shared_ptr<Entity> block : EntityManager::m_Entities)
+		{
+			if (block->m_type != EntityType::block)
+			{
+				continue;
+			}
+
+			if (block->m_enabled == false)
+			{
+				continue;
+			}
+
+			sf::FloatRect boundWeapon;
+			boundWeapon = weapon->m_sprite.getGlobalBounds();
+
+			sf::FloatRect boundBlock;
+			boundBlock = block->m_sprite.getGlobalBounds();
+
+			if (boundWeapon.intersects(boundBlock) == true)
+			{
+				weapon->m_enabled = false;
+				_IsEnemyWeaponFired = false;
+				//break;
+				goto end;
+			}
+		}
+	}
+
+end:
+	//nop
+	return;
+}
+
+void Game::HandleCollisionBlockEnemy()
+{
+	// Handle collision ennemy blocks
+
+	for (std::shared_ptr<Entity> enemy : EntityManager::m_Entities)
+	{
+		if (enemy->m_enabled == false)
+		{
+			continue;
+		}
+
+		if (enemy->m_type != EntityType::enemy)
+		{
+			continue;
+		}
+
+		for (std::shared_ptr<Entity> block : EntityManager::m_Entities)
+		{
+			if (block->m_type != EntityType::block)
+			{
+				continue;
+			}
+
+			if (block->m_enabled == false)
+			{
+				continue;
+			}
+
+			sf::FloatRect boundEnemy;
+			boundEnemy = enemy->m_sprite.getGlobalBounds();
+
+			sf::FloatRect boundBlock;
+			boundBlock = block->m_sprite.getGlobalBounds();
+
+			if (boundEnemy.intersects(boundBlock) == true)
+			{
+				EntityManager::GetPlayer()->m_enabled = false;
+				goto end;
+			}
+		}
+	}
+
+end:
+	//nop
+	return;
+}
+
+
+void Game::HandleCollisionWeaponBlock()
+{
+	// Handle collision weapon blocks
+
+	for (std::shared_ptr<Entity> weapon : EntityManager::m_Entities)
+	{
+		if (weapon->m_enabled == false)
+		{
+			continue;
+		}
+
+		if (weapon->m_type != EntityType::weapon)
+		{
+			continue;
+		}
+
+		for (std::shared_ptr<Entity> block : EntityManager::m_Entities)
+		{
+			if (block->m_type != EntityType::block)
+			{
+				continue;
+			}
+
+			if (block->m_enabled == false)
+			{
+				continue;
+			}
+
+			sf::FloatRect boundWeapon;
+			boundWeapon = weapon->m_sprite.getGlobalBounds();
+
+			sf::FloatRect boundBlock;
+			boundBlock = block->m_sprite.getGlobalBounds();
+
+			if (boundWeapon.intersects(boundBlock) == true)
+			{
+				weapon->m_enabled = false;
+				_countPlayerWeaponFired = false;
+				_countPlayerWeaponFired--;
+				_score += 10;
+				//break;
+				goto end;
+			}
+		}
+	}
+
+end:
+	//nop
+	return;
+}
+
+void Game::HandleCollisionPlayerBlock()
+{
+	// Handle collision weapon blocks
+
+	for (std::shared_ptr<Entity> player : EntityManager::m_Entities)
+	{
+		if (player->m_enabled == false)
+		{
+			continue;
+		}
+
+		if (player->m_type != EntityType::player)
+		{
+			continue;
+		}
+
+		for (std::shared_ptr<Entity> block : EntityManager::m_Entities)
+		{
+			if (block->m_type != EntityType::block)
+			{
+				continue;
+			}
+
+			if (block->m_enabled == false)
+			{
+				continue;
+			}
+
+			sf::FloatRect boundPlayer;
+			boundPlayer = player->m_sprite.getGlobalBounds();
+
+			sf::FloatRect boundBlock;
+			boundBlock = block->m_sprite.getGlobalBounds();
+
+			if (boundPlayer.intersects(boundBlock) == true)
+			{
+				int x = EntityManager::GetPlayer()->m_sprite.getPosition().x;
+				int y = EntityManager::GetPlayer()->m_sprite.getPosition().y;
+				player->m_position.x = x - 1;
+				player->m_position.y = y;
+				_countPlayerWeaponFired--;
+				_score += 100;
+				// break;
+				goto end;
+			}
+		}
+	}
+
+end:
+	//nop
+	return;
+}
 
 void Game::HanldeEnemyWeaponMoves()
 {

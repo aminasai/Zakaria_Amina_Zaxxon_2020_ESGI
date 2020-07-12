@@ -9,6 +9,7 @@ enum EntityType
 	enemyWeapon,
 	enemyMaster,
 	enemyMasterWeapon,
+	block,
 	enemyCanon,
 	enemyCanonWeapon,
 	enemyBoss,

@@ -4,6 +4,7 @@
 #define ENEMIES_COUNT 5
 #define CANON_COUNT 2
 #define MAX_WEAPON_FIRE 3
+#define BLOCK_COUNT 4
 
 class Game
 {
@@ -39,6 +40,11 @@ private:
 	void HandleEnemyWeaponFiring();
 	void HandleEnemyCanonWeaponFiring();
 	void HandleEnemyBossWeaponFiring();
+	void HandleCollisionEnemyMasterWeaponBlock();
+	void HandleCollisionEnemyWeaponBlock();
+	void HandleCollisionBlockEnemy();
+	void HandleCollisionWeaponBlock();
+	void HandleCollisionPlayerBlock();
 	void HandleEnemyMasterMove();
 	void HandleEnemyMoves();
 	void HandleEnemyBossArrival();
@@ -63,6 +69,8 @@ private:
 	sf::RenderWindow		mWindow;
 	sf::Texture	mTexture;
 	sf::Sprite	mPlayer;
+	sf::Texture	_TextureBlock;
+	sf::Sprite	_Block[BLOCK_COUNT];
 	sf::Font	mFont;
 	sf::Text	mStatisticsText;
 	sf::Time	mStatisticsUpdateTime;
