@@ -33,7 +33,7 @@ Game::Game()
 	mTexture.loadFromFile("Media/Textures/player.png");
 	_TextureEnemyMaster.loadFromFile("Media/Textures/enemy_master.png");
 	_TextureEnemy.loadFromFile("Media/Textures/enemy.png");
-	_TextureCanon.loadFromFile("Media/Textures/canon_2.png");
+	_TextureCanon.loadFromFile("Media/Textures/ply.png");
 	_TextureCanonWeapon.loadFromFile("Media/Textures/canon_bullet.png");
 	_TextureBlock.loadFromFile("Media/Textures/block.png");
 	_TextureEnemyBoss.loadFromFile("Media/Textures/enemy_boss.png");
@@ -48,17 +48,17 @@ Game::Game()
 	_SoundEnemyWeaponShoot.setBuffer(_BufferEnemyWeaponShoot);
 	_BufferEnemyMasterWeaponShoot.loadFromFile("Media/Sounds/enemy-master-shoot.wav");
 	_SoundEnemyMasterWeaponShoot.setBuffer(_BufferEnemyMasterWeaponShoot);
-	_BufferEnemyCanonWeaponShoot.loadFromFile("Media/Sounds/enemy-canon-shoot.wav");
+	_BufferEnemyCanonWeaponShoot.loadFromFile("Media/Sounds/enemy-ply-shoot.wav");
 	_SoundEnemyCanonWeaponShoot.setBuffer(_BufferEnemyCanonWeaponShoot);
 	_BufferEnemyBossWeaponShoot.loadFromFile("Media/Sounds/enemy-boss-shoot.wav");
 	_SoundEnemyBossWeaponShoot.setBuffer(_BufferEnemyBossWeaponShoot);
-	_BufferGameOver.loadFromFile("Media/Sounds/you-loose.wav");
+	_BufferGameOver.loadFromFile("Media/Sounds/game_over.wav");
 	_SoundGameOver.setBuffer(_BufferGameOver);
-	_BufferCongratulation.loadFromFile("Media/Sounds/congratulation.wav");
+	_BufferCongratulation.loadFromFile("Media/Sounds/winner.wav");
 	_SoundCongratulation.setBuffer(_BufferCongratulation);
 	_BufferNextTime.loadFromFile("Media/Sounds/next-time.wav");
 	_SoundNextTime.setBuffer(_BufferNextTime);
-	_SoundBackgroundMusic.openFromFile("Media/Sounds/Mute_City_F-Zero_X.wav");
+	_SoundBackgroundMusic.openFromFile("Media/Sounds/song-zaxxon-game.wav");
 	_SoundBackgroundMusic.play();
 
 	// Font
@@ -1937,7 +1937,7 @@ void Game::DisplayWin()
 		mText.setPosition(200.f, 200.f);
 		mText.setCharacterSize(80);
 
-		mText.setString("YOU WON !!!");
+		mText.setString("A WINNER IS YOU!");
 
 		_IsGameWon = true;
 		if (_playerLives == 3) {
